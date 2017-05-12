@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="文件管理,云盘,Angular">
+    <meta name="author" content="Alexlovett">
+    <title>muban</title>
+    <!-- <link rel="stylesheet" href="../plugins/font-awesome-4.7.0/css/font-awesome.min.css"> -->
+    <link rel="stylesheet" href="../css/index.css">
+    <script type="text/javascript" src="../plugins/angular.min.js"></script>
+    <script type="text/javascript" src="../plugins/angular-animate.min.js"></script>
+    <script type="text/javascript" src="../js/index.min.js"></script>
+  </head>
+  <body ng-app="myApp" ng-controller="bodyCtrl">
+    <header id="main_fixed_header" ng-controller="headerCtrl">
+      <!-- 顶部导航 s -->
+      <div class="logo" style="background:{{logobg}}">
+        <a href="#"></a>
+      </div>
+      <div id="main-normal" ng-show="!showList">
+        <!-- 传输面板 s -->
+          <div class="mod-act">
+            <a href="javascript:void(0);" id="main-header-manage" title="文件管理">
+              <i class="btn-refresh"></i>
+              <span id="sync-num">1</span>
+            </a>
+          </div>
+        <!-- 传输面板 e -->
+        <!-- 搜索 s -->
+          <div class="mod-search" ng-controller="searchBar">
+            <i class="btn-search"></i>
+            <input type="text" name="" value="" placeholder="请输入文件名" nav-button ng-focus="searchFocus($event)" ng-blur="searchBlur($event)" ng-keyup="searchKeyup($event)">
+            <i class="btn-close" nav-button ng-click="searchClose($event)" ng-mouseenter="closemouseenter($event)" ng-mouseleave="closemouseleave($event)"></i>
+          </div>
+        <!-- 搜索 e -->
+        <!-- 上传 s -->
+          <div class="mod-upload">
+            <input id="upload_input" type="file" name="file" value="">
+            <a href="javascript:void(0);" ng-click="uploadClick()">
+              <i class="btn-add"></i>
+              <span class="btn-text">上传</span>
+            </a>
+          </div>
+        <!-- 上传 e -->
+        <!-- 视图 s -->
+          <div class="mod-view" id="mod-view-bar">
+            <div class="view-list-item clearfix">
+              <div class="view-switch">
+                <a class="item-list active" href="#listview" title="列表视图" data-mod="listview" nav-button ng-click="leftMenuClick($event)">
+                  <i class="btn-list"></i>
+                </a>
+                <a class="item-list" href="#thumview" title="缩略图视图" data-mod="thumview" nav-button ng-click="leftMenuClick($event)">
+                  <i class="btn-thum"></i>
+                </a>
+              </div>
+              <div class="rank-switch">
+                <a class="item-list active" href="#timesort" title="按时间排序" data-mod="timesort" nav-button ng-click="leftMenuClick($event)">
+                  <i class="btn-time"></i>
+                </a>
+                <a class="item-list" href="#lettersort" title="按字母排序" data-mod="lettersort" nav-button ng-click="leftMenuClick($event)">
+                  <i class="btn-letter"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        <!-- 视图 e -->
+      </div>
+      <div id="main-edit" ng-show="showList">
+        <div class="btn-cancel">
+          <a href="javascript:void(0);" ng-click="cancelSelect()">取消选择</a>
+        </div>
+        <div class="confirm-text-item" ng-model="selectNum">
+          选择了<span>{{selectNum}}</span>项
+        </div>
+        <div class="top-item-list">
+          <a href="javascript:void(0);" class="act-list" data-action="trash" ng-click="deleteFn($event, $index)">
+            <i class="icon-trash" title="删除"></i>
+            <span class="icon-text">删除</span>
+          </a>
+          <a href="javascript:void(0);" class="act-list" data-action="move" ng-click="removeFn($event, $index)">
+            <i class="icon-move" title="移动"></i>
+            <span class="icon-text">移动</span>
+          </a>
+          <a href="javascript:void(0);" class="act-list" data-action="download">
+            <i class="icon-download" title="下载"></i>
+            <span class="icon-text">下载</span>
+          </a>
+          <a href="javascript:void(0);" class="act-list" data-action="share_enter">
+            <i class="icon-share" title="分享链接"></i>
+            <span class="icon-text">分享</span>
+          </a>
+        </div>
+      </div>
+      <!-- 顶部导航 e -->
+    </header>
+    <div id="layout-body">
+      <aside id="main_nav" auto-height>
+        <div id="layout-aside-hd">
+          <div class="mod-user mod-user-vip">
+            <div id="user-face">
+              <a class="user-pic" href="javascript:void(0);">
+                <img src="../img/user.jpg" alt="">
+                <i class="icon-vip"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div id="layout-aside-box" nav-button>
+          <div id="mod-aside-menu">
+            <div id="add-vip">
+              <a href="javascript: void(0);" class="btn btn-m btn-vip">
+                <span class="j-vip-txt">开通会员</span>
+              </a>
+            </div>
+            <div class="menu-item">
+              <div class="menu-item-bd">
+                <ul class="menu-list">
+                  <li class="left-menu-item" data-mod="recent" nav-button ng-click="leftMenuClick($event)">
+                    <a href="#recent">
+                      <i class="icon-clock"></i>
+                      <span class="menu-title">最近</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="menu-item">
+              <div class="menu-item-hd">
+                <h3 class="menu-item-title">文件</h3>
+              </div>
+              <div class="menu-item-bd">
+                <ul class="menu-list">
+                  <li class="left-menu-item" data-mod="disk" ng-click="leftMenuClick($event)">
+                    <a href="#disk">
+                      <i class="icon-all"></i>
+                      <span class="menu-title">全部</span>
+                    </a>
+                  </li>
+                  <li class="left-menu-item" data-mod="doc" ng-click="leftMenuClick($event)">
+                    <a href="#doc">
+                      <i class="icon-doc"></i>
+                      <span class="menu-title">文档</span>
+                    </a>
+                  </li>
+                  <li class="left-menu-item" data-mod="album" ng-click="leftMenuClick($event)">
+                    <a href="#album">
+                      <i class="icon-pic"></i>
+                      <span class="menu-title">图片</span>
+                    </a>
+                  </li>
+                  <li class="left-menu-item" data-mod="video" ng-click="leftMenuClick($event)">
+                    <a href="#video">
+                      <i class="icon-vedio"></i>
+                      <span class="menu-title">视频</span>
+                    </a>
+                  </li>
+                  <li class="left-menu-item" data-mod="note" ng-click="leftMenuClick($event)">
+                    <a href="#note">
+                      <i class="icon-note"></i>
+                      <span class="menu-title">笔记</span>
+                    </a>
+                  </li>
+                  <li class="left-menu-item" data-mod="audio" ng-click="leftMenuClick($event)">
+                    <a href="#audio">
+                      <i class="icon-audio"></i>
+                      <span class="menu-title">音乐</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="menu-item">
+              <div class="menu-item-hd">
+                <h3 class="menu-item-title">照片</h3>
+              </div>
+              <div class="menu-item-bd">
+                <ul class="menu-list">
+                  <li class="left-menu-item" data-mod="photo-time" ng-click="leftMenuClick($event)">
+                    <a href="#photo-time">
+                      <i class="icon-time"></i>
+                      <span class="menu-title">时间</span>
+                    </a>
+                  </li>
+                  <li class="left-menu-item" data-mod="photo-location" ng-click="leftMenuClick($event)">
+                    <a href="#photo-location">
+                      <i class="icon-location"></i>
+                      <span class="menu-title">地点</span>
+                    </a>
+                  </li>
+                  <li class="left-menu-item" data-mod="photo-tags" ng-click="leftMenuClick($event)">
+                    <a href="#photo-tags">
+                      <i class="icon-tag"></i>
+                      <span class="menu-title">标签</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="menu-item">
+              <div class="menu-item-hd">
+                <h3 class="menu-item-title">我的</h3>
+              </div>
+              <div class="menu-item-bd">
+                <ul class="menu-list">
+                  <li class="left-menu-item" data-mod="recycle" ng-click="leftMenuClick($event)">
+                    <a href="#recycle">
+                      <i class="icon-trush"></i>
+                      <span class="menu-title">回收站</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+      <section id="layout-main" change-content>
+          <div id="_main_hd">
+            <div class="multi-check">
+              <i id="multi-file-check" class="icon-checkbox" nav-button ng-click="leftMenuClick($event)"></i>
+            </div>
+            <div class="text-decoration">
+              <span>全选</span>
+            </div>
+          </div>
+          <div id="_main_content" auto-height-body>
+            <ul id="list_disk_files" class="list-group" ng-class="info.viewtype">
+              <li class="_main_content_item" ng-switch="domain.type" data-unid="{{domain.unid}}" ng-repeat="domain in info.operate" nav-button ng-mouseenter="mouseenter($event)" ng-mouseleave="mouseleave($event)">
+                <div class="item-title">
+                  <div class="multi-check">
+                    <i class="icon-checkbox" ng-click="checkClick($event,$index)"></i>
+                  </div>
+                  <div class="thumb">
+                    <img ng-src="{{domain.img}}" alt="" ng-switch-when="image">
+                    <i class="icon icon-xls-m" ng-switch-when="excel"></i>
+                    <i class="icon icon-doc-m" ng-switch-when="word"></i>
+                    <i class="icon icon-ppt-m" ng-switch-when="ppt"></i>
+                    <i class="icon icon-audio-m" ng-switch-when="audio"></i>
+                    <img ng-src="{{domain.img}}" alt="" ng-switch-default="image">
+                  </div>
+                  <div class="info">
+                    <span class="title" title="user.png.png" ng-model="revalue" ng-blur="remoublur($event, $index)" contenteditable="{{conedit[$index]}}">{{domain.name}}</span>
+                  </div>
+                </div>
+                <div class="item-info">
+                  <div class="item-info-time">
+                    <span class="txt txt-time">{{domain.time}}</span>
+                  </div>
+                  <div class="item-info-size">
+                    <span class="txt txt-size">{{domain.size}}</span>
+                  </div>
+                  <div class="item-info-list">
+                    <a href="javascript:void(0);" class="act-list" data-action="share_enter">
+                      <i class="icon-share" title="分享链接" ng-click="shareFn($event, $index)"></i>
+                    </a>
+                    <a href="javascript:void(0);" class="act-list" data-action="download" ng-href="{{domain.href}}">
+                      <i class="icon-download" title="下载"></i>
+                    </a>
+                    <a href="javascript:void(0);" class="act-list" data-action="move">
+                      <i class="icon-move" title="移动" ng-click="removeFn($event, $index)"></i>
+                    </a>
+                    <a href="javascript:void(0);" class="act-list" data-action="trash">
+                      <i class="icon-trash" title="删除" ng-click="deleteFn($event, $index)"></i>
+                    </a>
+                    <a href="javascript:void(0);" class="act-list" data-action="rename">
+                      <i class="icon-rename" title="重命名" ng-click="renameClick($event, $index)"></i>
+                    </a>
+                    <a href="javascript:void(0);" class="act-list" data-action="qr_code">
+                      <i class="icon-qr_code" title="二维码" ng-click="qr_codeFn($event, $index)"></i>
+                    </a>
+                  </div>
+                </div>
+                <div class="item-box">
+                  <div class="thumview-checkbox" ng-click="checkClick($event,$index,'veiw')"></div>
+                  <div class="item-thum-info">
+                    <img ng-src="{{domain.img}}" alt="" ng-switch-when="image">
+                    <i class="icon-l icon-xls-l" ng-switch-when="excel"></i>
+                    <i class="icon-l icon-doc-l" ng-switch-when="word"></i>
+                    <i class="icon-l icon-ppt-l" ng-switch-when="ppt"></i>
+                    <i class="icon-l icon-audio-l" ng-switch-when="audio"></i>
+                    <img ng-src="{{domain.img}}" alt="" ng-switch-default="image">
+                  </div>
+                  <div class="item-desc">
+                    <i class="icon-s icon-img-s" ng-switch-when="image"></i>
+                    <i class="icon-s icon-xls-s" ng-switch-when="excel"></i>
+                    <i class="icon-s icon-doc-s" ng-switch-when="word"></i>
+                    <i class="icon-s icon-ppt-s" ng-switch-when="ppt"></i>
+                    <i class="icon-s icon-audio-s" ng-switch-when="audio"></i>
+                    <i class="icon-s icon-audio-s" ng-switch-when="vedio"></i>
+                    <i class="icon-s icon-audio-s" ng-switch-when="flash"></i>
+                    <i class="icon-s icon-audio-s" ng-switch-when="zip"></i>
+                    <i class="icon-s icon-img-s" ng-switch-default="image"></i>
+                    <span>G.E.M.邓紫棋-喜欢你</span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="_main_loading" ng-show="showloading"></div>
+      </section>
+    </div>
+    <footer>
+    </footer>
+    <!-- 弹出层元素 begin -->
+    <div class="layer-bg" ng-show="layershow"></div>
+    <div class="layer-main" id='myLayer' ng-show="layershow" ng-model="judgeLayer" >
+        <layer-content></layer-content>
+    </div>
+    <!-- 弹出层元素 end -->
+  </body>
+</html>

@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link  href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.min.css"  rel="stylesheet"/>
+    <script type="text/javascript" src="../plugins/angular.min.js"></script>
+  </head>
+  <body ng-app="App">
+    <form class="form-horizontal" ng-controller="index">
+        <label class="col-sm-2 control-label">绑定域名:</label>
+        <div class="col-sm-10">
+            <div ng-repeat="domain in info.operate">
+                <div class="form-group">
+                    <label class="control-label col-sm-1" for="domain{{$index + 1}}">域名{{$index + 1}}</label>
+                    <div class="col-sm-9">
+                        <input type="text"
+                               id="domain{{$index + 1}}"
+                               class="form-control"
+                               ng-model="domain.value"
+                               name="domain{{$index + 1}}"
+                               ng-disabled="!$index" />
+                    </div>
+                    <div class="col-sm-2">
+                        <button class="btn btn-default"
+                                type="button"
+                                ng-disabled="info.operate.length >= 4"
+                                ng-click="info.add($index)">+</button>
+                        <button class="btn btn-default"
+                                type="button"
+                                ng-click="info.delete($index)"
+                                ng-show="$index">-</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-offset-3"><button type="button" class="btn btn-primary" ng-click="info.result()">结果</button></div>
+    </form>
+  </body>
+  <script type="text/javascript">
+  var app = angular.module('App', []);
+app.controller('index', function($scope, $log) {
+  $scope.info = {};
+  $scope.info.operate = [];
+  // 假设这是数据来源
+  var simp = ["www.baidu.com"];
+  angular.forEach(simp, function(data, index) {
+      $scope.info.operate.push({key: index, value: data});
+  });
+  // 增加
+  $scope.info.add = function($index) {
+      $scope.info.operate.splice($index + 1, 0, {key: $index + 1, value: ""});
+  };
+  // 删除
+  $scope.info.delete = function($index) {
+      $scope.info.operate.splice($index, 1);
+  };
+  // 结果
+  $scope.info.result = function() {
+      var result = [];
+      angular.forEach($scope.info.operate, function(data) {
+          result.push(data.value);
+      });
+      $log.debug(result);
+      debugger;
+  };
+});
+  </script>
+</html>
